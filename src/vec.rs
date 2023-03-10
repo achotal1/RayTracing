@@ -4,7 +4,7 @@ use std::fmt::Display;
 use rand::prelude::*;
 use std::ops::Range;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Vec3{
 	e: [f64; 3]
 }
@@ -76,6 +76,14 @@ impl Vec3{
             }
         }
     }
+    pub fn near_zero(self) -> bool {
+        const EPS: f64 = 1.0e-8;
+        self[0].abs() < EPS && self[1].abs() < EPS && self[2].abs() < EPS
+    }
+
+    pub fn reflect(self, n: Vec3) -> Vec3 {
+        self - 2.0 * self.dot(n) * n
+    }
 
 }
 
@@ -141,6 +149,24 @@ impl MulAssign<f64> for Vec3 {
     fn mul_assign(&mut self, other: f64) -> () {
         *self = Vec3 {
             e: [self[0] * other, self[1] * other, self[2] * other]
+        };
+    }
+}
+
+impl Mul<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            e: [self[0] * other[0], self[1] * other[1], self[2] * other[2]]
+        }
+    }
+}
+
+impl MulAssign<Vec3> for Vec3 {
+    fn mul_assign(&mut self, other: Vec3) -> () {
+        *self = Vec3 {
+            e: [self[0] * other[0], self[1] * other[1], self[2] * other[2]]
         };
     }
 }
